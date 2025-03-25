@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import { Star, Settings, Shield, DollarSign, Menu, X, ChevronLeft, ChevronRight, Send as SendIcon } from 'lucide-react';
 import type { ChangeEvent, FormEvent } from 'react';
 
-const products = [
+// Constants moved outside component to prevent re-creation on each render
+const PRODUCTS = [
   {
     name: "CarPlay & Android Auto",
     image: "/nasi.jpg",
@@ -68,33 +69,51 @@ const products = [
   }
 ];
 
-const workImages = [
-  "/trabajo2.jpg",
-  "/trabajo2.1.jpg"
-];
+const WORK_IMAGES = {
+  focus: ["/focus.jpg", "/focus2.jpg"],
+  amarok: ["/amarok.jpg", "/amarok2.jpg"],
+  ranger: ["/trabajo2.jpg", "/trabajo2.1.jpg"],
+  corolla: ["/corolla.jpg", "/corolla2.jpg"]
+};
 
-const brands = [
+const BRANDS = [
   { name: "Pioneer", logo: "/pioneer-4.svg" },
   { name: "Sony", logo: "/sony-2.svg" }, 
   { name: "JBL", logo: "/jbl-2-logo.svg" },
   { name: "Alpine", logo: "/alpine-1.svg" }
 ];
 
+const FEATURES = [
+  { 
+    icon: <Star className="text-red-500" size={36} />, 
+    title: "Calidad Premium", 
+    description: "Los mejores productos seleccionados" 
+  },
+  { 
+    icon: <Settings className="text-red-500" size={36} />, 
+    title: "Instalación Profesional", 
+    description: "Técnicos certificados" 
+  },
+  { 
+    icon: <Shield className="text-red-500" size={36} />, 
+    title: "Garantía Extendida", 
+    description: "2 años de protección total" 
+  },
+  { 
+    icon: <DollarSign className="text-red-500" size={36} />, 
+    title: "Precios Competitivos", 
+    description: "La mejor relación calidad-precio" 
+  }
+];
+
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [currentWorkImageIndex, setCurrentWorkImageIndex] = useState(0);
-
-  const nextWorkImage = () => {
-    setCurrentWorkImageIndex((prevIndex) => 
-      (prevIndex + 1) % workImages.length
-    );
-  };
-
-  const prevWorkImage = () => {
-    setCurrentWorkImageIndex((prevIndex) => 
-      prevIndex === 0 ? workImages.length - 1 : prevIndex - 1
-    );
-  };
+  const [currentImageIndices, setCurrentImageIndices] = useState({
+    focus: 0,
+    amarok: 0,
+    ranger: 0,
+    corolla: 0
+  });
 
   const [formData, setFormData] = useState({
     name: '',
@@ -103,18 +122,38 @@ export default function Home() {
     description: ''
   });
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  // Memoized image navigation functions
+  const createImageNavigationHandlers = useCallback((imageKey: keyof typeof WORK_IMAGES) => {
+    const images = WORK_IMAGES[imageKey];
+    
+    const nextImage = () => {
+      setCurrentImageIndices(prev => ({
+        ...prev,
+        [imageKey]: (prev[imageKey] + 1) % images.length
+      }));
+    };
+
+    const prevImage = () => {
+      setCurrentImageIndices(prev => ({
+        ...prev,
+        [imageKey]: prev[imageKey] === 0 ? images.length - 1 : prev[imageKey] - 1
+      }));
+    };
+
+    return { nextImage, prevImage };
+  }, []);
+
+  const handleInputChange = useCallback((e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prevState => ({
       ...prevState,
       [name]: value
     }));
-  };
+  }, []);
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = useCallback((e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
-    // Prepare WhatsApp message
     const message = `Hola MusicCars! 
 
 Nombre: ${formData.name}
@@ -124,65 +163,79 @@ Vehículo: ${formData.vehicle}
 Descripción:
 ${formData.description}`;
 
-    // Encode the message for URL
     const encodedMessage = encodeURIComponent(message);
+    const phoneNumber = '5493816961911'; 
     
-    // Replace with your WhatsApp number (include country code without '+')
-    const phoneNumber = '5215512345678'; // Example Mexican phone number, replace with your actual number
-
-    // Redirect to WhatsApp
     window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, '_blank');
-  };
+  }, [formData]);
+
+  // Memoized navigation handlers for each section
+  const {
+    nextImage: nextFocusImage,
+    prevImage: prevFocusImage
+  } = useMemo(() => createImageNavigationHandlers('focus'), [createImageNavigationHandlers]);
+
+  const {
+    nextImage: nextRangerImage,
+    prevImage: prevRangerImage
+  } = useMemo(() => createImageNavigationHandlers('ranger'), [createImageNavigationHandlers]);
+
+  const {
+    nextImage: nextCorollaImage,
+    prevImage: prevCorollaImage
+  } = useMemo(() => createImageNavigationHandlers('corolla'), [createImageNavigationHandlers]);
+
+  const toggleMobileMenu = useCallback(() => {
+    setMobileMenuOpen(prev => !prev);
+  }, []);
 
   return (
     <div className="min-h-screen bg-black text-white">
-      {/* Navigation with mobile responsiveness */}
+      {/* Navigation */}
       <nav className="sticky top-0 z-50 bg-black/80 backdrop-blur-lg border-b border-red-900/30">
         <div className="container mx-auto flex justify-between items-center p-4">
           <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-white">
             MusicCars
           </h1>
           
-          {/* Desktop Navigation */}
           <div className="hidden md:flex space-x-6">
             <Link href="/" className="hover:text-red-400 transition-colors">Inicio</Link>
             <Link href="#productos" className="hover:text-red-400 transition-colors">Productos</Link>
             <Link href="#contacto" className="hover:text-red-400 transition-colors">Contacto</Link>
           </div>
           
-          {/* Mobile Menu Toggle */}
           <div className="md:hidden">
             <button 
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)} 
+              onClick={toggleMobileMenu} 
               className="text-white hover:text-red-400"
+              aria-label="Toggle Mobile Menu"
             >
               {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
         </div>
         
-        {/* Mobile Menu */}
         {mobileMenuOpen && (
           <div className="md:hidden absolute top-full left-0 w-full bg-black/95 backdrop-blur-lg">
             <div className="flex flex-col items-center space-y-4 p-6">
               <Link 
                 href="/" 
                 className="hover:text-red-400 transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
+                onClick={toggleMobileMenu}
               >
                 Inicio
               </Link>
               <Link 
                 href="#productos" 
                 className="hover:text-red-400 transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
+                onClick={toggleMobileMenu}
               >
                 Productos
               </Link>
               <Link 
                 href="#contacto" 
                 className="hover:text-red-400 transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
+                onClick={toggleMobileMenu}
               >
                 Contacto
               </Link>
@@ -190,8 +243,8 @@ ${formData.description}`;
           </div>
         )}
       </nav>
-
-      {/* Hero Section with Parallax Effect */}
+  
+      {/* Hero Section */}
       <header className="relative h-[80vh] flex items-center justify-center text-center overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-black via-red-900/50 to-black opacity-80 z-10"></div>
         <div className="relative z-20 container mx-auto px-4">
@@ -206,46 +259,85 @@ ${formData.description}`;
           </button>
         </div>
       </header>
-      <section className="container mx-auto py-16 px-4">
-        <h2 className="text-3xl font-bold text-center mb-12 text-white">
-          Antes y Después de Nuestro Trabajo
-        </h2>
-        <div className="relative max-w-4xl mx-auto">
-          <div className="relative overflow-hidden rounded-lg shadow-2xl">
-            <img 
-              src={workImages[currentWorkImageIndex]} 
-              alt={`Trabajo ${currentWorkImageIndex === 0 ? 'Antes' : 'Después'}`} 
-              className="w-full h-[800px] object-cover"
-            />
-            <button 
-              onClick={prevWorkImage}
-              className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 rounded-full p-2 hover:bg-red-900/50 transition-colors"
-            >
-              <ChevronLeft size={24} />
-            </button>
-            <button 
-              onClick={nextWorkImage}
-              className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 rounded-full p-2 hover:bg-red-900/50 transition-colors"
-            >
-              <ChevronRight size={24} />
-            </button>
+  
+      {/* Vehicle Installation Sections */}
+      {[
+        { 
+          title: "Ford Focus", 
+          images: WORK_IMAGES.focus, 
+          imageIndex: currentImageIndices.focus,
+          nextImage: nextFocusImage,
+          prevImage: prevFocusImage 
+        },
+        { 
+          title: "Amarok", 
+          images: WORK_IMAGES.amarok, 
+          imageIndex: currentImageIndices.amarok,
+          nextImage: () => {}, // Placeholder, implement similar to others
+          prevImage: () => {} 
+        },
+        { 
+          title: "Multimedia Ford Ranger", 
+          images: WORK_IMAGES.ranger, 
+          imageIndex: currentImageIndices.ranger,
+          nextImage: nextRangerImage,
+          prevImage: prevRangerImage 
+        },
+        { 
+          title: "Multimedia Toyota Corolla", 
+          images: WORK_IMAGES.corolla, 
+          imageIndex: currentImageIndices.corolla,
+          nextImage: nextCorollaImage,
+          prevImage: prevCorollaImage 
+        }
+      ].map((section, index) => (
+        <section key={index} className="container mx-auto py-16 px-4">
+          <h2 className="text-3xl font-bold text-center mb-12 text-white">
+            {section.title}
+          </h2>
+          <div className="relative max-w-4xl mx-auto">
+            <div className="relative overflow-hidden rounded-lg shadow-2xl">
+              <img 
+                src={section.images[section.imageIndex]} 
+                alt={`Trabajo ${section.imageIndex === 0 ? 'Antes' : 'Después'}`} 
+                className="w-full h-[800px] object-cover"
+              />
+              {section.images.length > 1 && (
+                <>
+                  <button 
+                    onClick={section.prevImage}
+                    className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 rounded-full p-2 hover:bg-red-900/50 transition-colors"
+                  >
+                    <ChevronLeft size={24} />
+                  </button>
+                  <button 
+                    onClick={section.nextImage}
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 rounded-full p-2 hover:bg-red-900/50 transition-colors"
+                  >
+                    <ChevronRight size={24} />
+                  </button>
+                </>
+              )}
+            </div>
+            {section.images.length > 1 && (
+              <div className="text-center mt-4">
+                <p className="text-gray-300">
+                  {section.imageIndex === 0 ? 'Antes' : 'Después'} de nuestra instalación
+                </p>
+              </div>
+            )}
           </div>
-          <div className="text-center mt-4">
-            <p className="text-gray-300">
-              {currentWorkImageIndex === 0 ? 'Antes' : 'Después'} de nuestra instalación
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Products Section with Updated Products */}
+        </section>
+      ))}
+  
+      {/* Products Section */}
       <section id="productos" className="container mx-auto py-16 px-4">
         <h2 className="text-3xl font-bold text-center mb-12 text-white">
           Nuestros Productos Destacados
         </h2>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {products.map((product, index) => (
+          {PRODUCTS.map((product, index) => (
             <div 
               key={index} 
               className="bg-gradient-to-br from-black/80 to-red-950/70 rounded-lg overflow-hidden shadow-2xl hover:shadow-[0_0_25px_rgba(220,38,38,0.4)] transition-all duration-300 group"
@@ -282,16 +374,14 @@ ${formData.description}`;
           ))}
         </div>
       </section>
-
-      
-
+  
       {/* Brands Section */}
       <section className="container mx-auto py-16 px-4">
         <h2 className="text-3xl font-bold text-center mb-12 text-white">
           Marcas Asociadas
         </h2>
         <div className="flex flex-wrap justify-center gap-8">
-          {brands.map((brand, index) => (
+          {BRANDS.map((brand, index) => (
             <div 
               key={index} 
               className="w-40 h-40 bg-gradient-to-br from-black/60 to-red-950/40 backdrop-blur-sm rounded-lg flex items-center justify-center border border-red-900/20 hover:shadow-[0_0_20px_rgba(220,38,38,0.4)] transition-all duration-300 group"
@@ -305,7 +395,7 @@ ${formData.description}`;
           ))}
         </div>
       </section>
-
+  
       {/* Features Section */}
       <section className="bg-black/90 py-16">
         <div className="container mx-auto px-4">
@@ -313,28 +403,7 @@ ${formData.description}`;
             ¿Por Qué Elegirnos?
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            {[
-              { 
-                icon: <Star className="text-red-500" size={36} />, 
-                title: "Calidad Premium", 
-                description: "Los mejores productos seleccionados" 
-              },
-              { 
-                icon: <Settings className="text-red-500" size={36} />, 
-                title: "Instalación Profesional", 
-                description: "Técnicos certificados" 
-              },
-              { 
-                icon: <Shield className="text-red-500" size={36} />, 
-                title: "Garantía Extendida", 
-                description: "2 años de protección total" 
-              },
-              { 
-                icon: <DollarSign className="text-red-500" size={36} />, 
-                title: "Precios Competitivos", 
-                description: "La mejor relación calidad-precio" 
-              }
-            ].map((feature, index) => (
+            {FEATURES.map((feature, index) => (
               <div 
                 key={index} 
                 className="text-center p-6 bg-black/50 rounded-lg hover:bg-red-950/20 transition-colors group"
@@ -351,7 +420,8 @@ ${formData.description}`;
           </div>
         </div>
       </section>
-
+  
+      {/* Contact Section */}
       <section id="contacto" className="container mx-auto py-16 px-4">
         <div className="max-w-2xl mx-auto bg-gradient-to-br from-black/80 to-red-950/70 rounded-lg shadow-2xl overflow-hidden">
           <div className="p-8">
@@ -437,7 +507,7 @@ ${formData.description}`;
           </div>
         </div>
       </section>
-
+  
       {/* Footer Section */}
       <footer className="bg-black/90 text-white py-8 border-t border-red-900/30">
         <div className="container mx-auto px-4 text-center">
