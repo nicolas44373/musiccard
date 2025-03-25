@@ -1,270 +1,454 @@
-import React from 'react';
+'use client';
+
+import React, { useState } from 'react';
 import Link from 'next/link';
+import { Star, Settings, Shield, DollarSign, Menu, X, ChevronLeft, ChevronRight, Send as SendIcon } from 'lucide-react';
+import type { ChangeEvent, FormEvent } from 'react';
+
+const products = [
+  {
+    name: "CarPlay & Android Auto",
+    image: "/nasi.jpg",
+    description: "Sistema multimedia avanzado con conectividad inteligente",
+    specs: [
+      "4GB RAM + 64GB Almacenamiento",
+      "Pantalla QLED 1288 x 720",
+      "CPU ARM CORTEX A7 Quad-Core",
+      "Bluetooth/WiFi/GPS/Mirror Link"
+    ],
+    price: 1111
+  },
+  {
+    name: "CreeLed IR100 Premium",
+    image: "/creled.jpg",
+    description: "Sistema de iluminación de alto rendimiento",
+    specs: [
+      "Tecnología LED de última generación",
+      "Alta luminosidad y eficiencia energética",
+      "Diseño resistente y duradero",
+      "Múltiples modos de iluminación"
+    ],
+    price: 1299
+  },
+  {
+    name: "The Ultra Sum R8 Premium",
+    image: "/creled2.jpg",
+    description: "Sistema de sonido premium de alta fidelidad",
+    specs: [
+      "Sonido envolvente de alta definición",
+      "Amplificador de potencia integrado",
+      "Conectividad Bluetooth avanzada",
+      "Diseño elegante y compacto"
+    ],
+    price: 1599
+  },
+  {
+    name: "CreeLed J10 Intermedio",
+    image: "/creled3.jpg",
+    description: "Solución de iluminación equilibrada",
+    specs: [
+      "Rendimiento medio con excelente costo-beneficio",
+      "Diseño compacto",
+      "Múltiples opciones de montaje",
+      "Compatibilidad universal"
+    ],
+    price: 899
+  },
+  {
+    name: "Luxked Y3 Económicas",
+    image: "/creled4.jpg",
+    description: "Opción accesible para iluminación básica",
+    specs: [
+      "Económicas sin sacrificar calidad",
+      "Instalación sencilla",
+      "Durabilidad garantizada",
+      "Perfectas para usuarios principiantes"
+    ],
+    price: 599
+  }
+];
+
+const workImages = [
+  "/trabajo2.jpg",
+  "/trabajo2.1.jpg"
+];
+
+const brands = [
+  { name: "Pioneer", logo: "/pioneer-4.svg" },
+  { name: "Sony", logo: "/sony-2.svg" }, 
+  { name: "JBL", logo: "/jbl-2-logo.svg" },
+  { name: "Alpine", logo: "/alpine-1.svg" }
+];
 
 export default function Home() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [currentWorkImageIndex, setCurrentWorkImageIndex] = useState(0);
+
+  const nextWorkImage = () => {
+    setCurrentWorkImageIndex((prevIndex) => 
+      (prevIndex + 1) % workImages.length
+    );
+  };
+
+  const prevWorkImage = () => {
+    setCurrentWorkImageIndex((prevIndex) => 
+      prevIndex === 0 ? workImages.length - 1 : prevIndex - 1
+    );
+  };
+
+  const [formData, setFormData] = useState({
+    name: '',
+    phone: '',
+    vehicle: '',
+    description: ''
+  });
+
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prevState => ({
+      ...prevState,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    
+    // Prepare WhatsApp message
+    const message = `Hola MusicCars! 
+
+Nombre: ${formData.name}
+Teléfono: ${formData.phone}
+Vehículo: ${formData.vehicle}
+
+Descripción:
+${formData.description}`;
+
+    // Encode the message for URL
+    const encodedMessage = encodeURIComponent(message);
+    
+    // Replace with your WhatsApp number (include country code without '+')
+    const phoneNumber = '5215512345678'; // Example Mexican phone number, replace with your actual number
+
+    // Redirect to WhatsApp
+    window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, '_blank');
+  };
+
   return (
-    <div className="min-h-screen relative bg-black">
-      {/* Textured background overlay */}
-      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDQwIDQwIj48ZyBmaWxsPSIjMDAwIiBmaWxsLW9wYWNpdHk9IjAuMDUiPjxwYXRoIGQ9Ik0wIDIwIEw0MCAyMCBNMjAgMCBMMjAgNDAiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLW9wYWNpdHk9IjAuMSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9nPjwvc3ZnPg==')] opacity-20 z-0"></div>
-      
-      {/* Gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black via-red-900/80 to-black z-0"></div>
-      
-      {/* Radial spotlight effect */}
-      <div className="absolute inset-0 bg-radial-gradient from-red-600/20 via-transparent to-transparent z-0"></div>
-      
-      {/* Content */}
-      <div className="relative z-10">
-        {/* Barra de navegación con efecto de vidrio */}
-        <nav className="sticky top-0 backdrop-blur-md bg-black/70 text-white p-4 border-b border-red-900/30 shadow-lg z-50">
-          <div className="container mx-auto flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-white">MusicCars</h1>
-            <div className="space-x-6">
-              <Link href="/" className="hover:text-red-400 transition-colors duration-300">Inicio</Link>
-              <Link href="#productos" className="hover:text-red-400 transition-colors duration-300">Productos</Link>
-              <Link href="#contacto" className="hover:text-red-400 transition-colors duration-300">Contacto</Link>
+    <div className="min-h-screen bg-black text-white">
+      {/* Navigation with mobile responsiveness */}
+      <nav className="sticky top-0 z-50 bg-black/80 backdrop-blur-lg border-b border-red-900/30">
+        <div className="container mx-auto flex justify-between items-center p-4">
+          <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-white">
+            MusicCars
+          </h1>
+          
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex space-x-6">
+            <Link href="/" className="hover:text-red-400 transition-colors">Inicio</Link>
+            <Link href="#productos" className="hover:text-red-400 transition-colors">Productos</Link>
+            <Link href="#contacto" className="hover:text-red-400 transition-colors">Contacto</Link>
+          </div>
+          
+          {/* Mobile Menu Toggle */}
+          <div className="md:hidden">
+            <button 
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)} 
+              className="text-white hover:text-red-400"
+            >
+              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
+        </div>
+        
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden absolute top-full left-0 w-full bg-black/95 backdrop-blur-lg">
+            <div className="flex flex-col items-center space-y-4 p-6">
+              <Link 
+                href="/" 
+                className="hover:text-red-400 transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Inicio
+              </Link>
+              <Link 
+                href="#productos" 
+                className="hover:text-red-400 transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Productos
+              </Link>
+              <Link 
+                href="#contacto" 
+                className="hover:text-red-400 transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Contacto
+              </Link>
             </div>
           </div>
-        </nav>
+        )}
+      </nav>
 
-        {/* Banner principal con efecto de resplandor */}
-        <header className="container mx-auto py-20 px-4 text-center text-white relative overflow-hidden">
-          <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-96 h-96 bg-red-600/20 rounded-full blur-3xl"></div>
-          <h1 className="text-5xl font-bold mb-6 drop-shadow-[0_0_10px_rgba(220,38,38,0.5)]">Los Mejores Estéreos para Tu Auto</h1>
-          <p className="text-xl mb-8 text-gray-200">Calidad, potencia y estilo para una experiencia sonora incomparable</p>
-          <button className="bg-gradient-to-r from-red-700 to-red-900 hover:from-red-800 hover:to-red-950 text-white font-bold py-3 px-8 rounded-lg transition duration-300 shadow-[0_0_15px_rgba(220,38,38,0.4)]">
-            Ver Catálogo
+      {/* Hero Section with Parallax Effect */}
+      <header className="relative h-[80vh] flex items-center justify-center text-center overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-black via-red-900/50 to-black opacity-80 z-10"></div>
+        <div className="relative z-20 container mx-auto px-4">
+          <h1 className="text-4xl md:text-6xl font-bold mb-6 text-white drop-shadow-[0_0_15px_rgba(220,38,38,0.5)]">
+            Transforma Tu Experiencia Auditiva
+          </h1>
+          <p className="text-xl md:text-2xl mb-8 text-gray-200">
+            Tecnología de punta para los amantes del sonido sobre ruedas
+          </p>
+          <button className="bg-gradient-to-r from-red-700 to-red-900 hover:from-red-800 hover:to-red-950 text-white font-bold py-3 px-8 rounded-lg transition duration-300 transform hover:scale-105">
+            Explora Nuestros Productos
           </button>
-        </header>
+        </div>
+      </header>
+      <section className="container mx-auto py-16 px-4">
+        <h2 className="text-3xl font-bold text-center mb-12 text-white">
+          Antes y Después de Nuestro Trabajo
+        </h2>
+        <div className="relative max-w-4xl mx-auto">
+          <div className="relative overflow-hidden rounded-lg shadow-2xl">
+            <img 
+              src={workImages[currentWorkImageIndex]} 
+              alt={`Trabajo ${currentWorkImageIndex === 0 ? 'Antes' : 'Después'}`} 
+              className="w-full h-[800px] object-cover"
+            />
+            <button 
+              onClick={prevWorkImage}
+              className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 rounded-full p-2 hover:bg-red-900/50 transition-colors"
+            >
+              <ChevronLeft size={24} />
+            </button>
+            <button 
+              onClick={nextWorkImage}
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 rounded-full p-2 hover:bg-red-900/50 transition-colors"
+            >
+              <ChevronRight size={24} />
+            </button>
+          </div>
+          <div className="text-center mt-4">
+            <p className="text-gray-300">
+              {currentWorkImageIndex === 0 ? 'Antes' : 'Después'} de nuestra instalación
+            </p>
+          </div>
+        </div>
+      </section>
 
-        {/* Sección de productos destacados */}
-        <section id="productos" className="container mx-auto py-16 px-4">
-          <h2 className="text-3xl font-bold mb-12 text-center text-white drop-shadow-[0_0_8px_rgba(220,38,38,0.4)]">Nuestros Productos Destacados</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Producto 1 - Con efecto de cristal y neón - Updated with detailed specs */}
-            <div className="bg-gradient-to-br from-black/80 to-red-950/70 rounded-lg overflow-hidden shadow-[0_0_15px_rgba(0,0,0,0.5)] backdrop-blur-sm border border-red-900/30 group hover:shadow-[0_0_20px_rgba(220,38,38,0.4)] transition-all duration-300">
-              <div className="h-48 bg-black/50 flex items-center justify-center relative">
-                <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgdmlld0JveD0iMCAwIDIwIDIwIj48ZyBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDMiPjxjaXJjbGUgY3g9IjEwIiBjeT0iMTAiIHI9IjEiLz48L2c+PC9zdmc+')] opacity-30"></div>
+      {/* Products Section with Updated Products */}
+      <section id="productos" className="container mx-auto py-16 px-4">
+        <h2 className="text-3xl font-bold text-center mb-12 text-white">
+          Nuestros Productos Destacados
+        </h2>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {products.map((product, index) => (
+            <div 
+              key={index} 
+              className="bg-gradient-to-br from-black/80 to-red-950/70 rounded-lg overflow-hidden shadow-2xl hover:shadow-[0_0_25px_rgba(220,38,38,0.4)] transition-all duration-300 group"
+            >
+              <div className="h-64 bg-black/50 flex items-center justify-center relative overflow-hidden">
                 <img 
-                  src="nasi.jpg" 
-                  alt="Estéreo Pro X1" 
-                  className="h-full w-auto object-contain transform group-hover:scale-105 transition-transform duration-500"
+                  src={product.image} 
+                  alt={product.name} 
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
               </div>
-              <div className="p-6 text-white">
-                <h3 className="text-xl font-bold mb-2 group-hover:text-red-400 transition-colors duration-300">CarPlay & Android Auto</h3>
-                <div className="mb-4 text-gray-300 text-sm">
-                  <ul className="space-y-1">
-                    <li>• 4GB RAM + 64GB Almacenamiento</li>
-                    <li>• Pantalla QLED 1288 x 720</li>
-                    <li>• CPU ARM CORTEX A7 Quad-Core</li>
-                    <li>• Bluetooth/WiFi/GPS/Mirror Link/USB</li>
-                    <li>• Potencia máx: 4x60W con salida RCA</li>
-                    <li>• Soporte para cámara inversa</li>
-                  </ul>
-                </div>
-                <p className="text-2xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-white">$1.111</p>
-                <button className="w-full bg-gradient-to-r from-red-700 to-red-900 hover:from-red-800 hover:to-red-950 text-white font-bold py-2 rounded transition duration-300 shadow-md">
-                  Más Información
-                </button>
-              </div>
-            </div>
-
-            {/* Producto 2 */}
-            <div className="bg-gradient-to-br from-black/80 to-red-950/70 rounded-lg overflow-hidden shadow-[0_0_15px_rgba(0,0,0,0.5)] backdrop-blur-sm border border-red-900/30 group hover:shadow-[0_0_20px_rgba(220,38,38,0.4)] transition-all duration-300">
-              <div className="h-48 bg-black/50 flex items-center justify-center relative">
-                <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgdmlld0JveD0iMCAwIDIwIDIwIj48ZyBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDMiPjxjaXJjbGUgY3g9IjEwIiBjeT0iMTAiIHI9IjEiLz48L2c+PC9zdmc+')] opacity-30"></div>
-                <div className="w-32 h-32 bg-gradient-to-br from-gray-800 to-black rounded-md flex items-center justify-center shadow-inner group-hover:from-red-900 group-hover:to-black transition-all duration-500">
-                  <span className="text-white text-lg font-semibold">SoundMax 4000</span>
-                </div>
-              </div>
-              <div className="p-6 text-white">
-                <h3 className="text-xl font-bold mb-2 group-hover:text-red-400 transition-colors duration-300">SoundMax 4000</h3>
-                <p className="mb-4 text-gray-300">Sistema de audio premium con conectividad avanzada y sonido envolvente</p>
-                <p className="text-2xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-white">$1.111</p>
-                <button className="w-full bg-gradient-to-r from-red-700 to-red-900 hover:from-red-800 hover:to-red-950 text-white font-bold py-2 rounded transition duration-300 shadow-md">
-                  Más Información
-                </button>
-              </div>
-            </div>
-
-            {/* Producto 3 */}
-            <div className="bg-gradient-to-br from-black/80 to-red-950/70 rounded-lg overflow-hidden shadow-[0_0_15px_rgba(0,0,0,0.5)] backdrop-blur-sm border border-red-900/30 group hover:shadow-[0_0_20px_rgba(220,38,38,0.4)] transition-all duration-300">
-              <div className="h-48 bg-black/50 flex items-center justify-center relative">
-                <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgdmlld0JveD0iMCAwIDIwIDIwIj48ZyBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDMiPjxjaXJjbGUgY3g9IjEwIiBjeT0iMTAiIHI9IjEiLz48L2c+PC9zdmc+')] opacity-30"></div>
-                <div className="w-32 h-32 bg-gradient-to-br from-gray-800 to-black rounded-md flex items-center justify-center shadow-inner group-hover:from-red-900 group-hover:to-black transition-all duration-500">
-                  <span className="text-white text-lg font-semibold">AutoTech 7.1</span>
-                </div>
-              </div>
-              <div className="p-6 text-white">
-                <h3 className="text-xl font-bold mb-2 group-hover:text-red-400 transition-colors duration-300">AutoTech 7.1</h3>
-                <p className="mb-4 text-gray-300">Sistema de entretenimiento completo con navegación integrada</p>
-                <p className="text-2xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-white">$1.111</p>
-                <button className="w-full bg-gradient-to-r from-red-700 to-red-900 hover:from-red-800 hover:to-red-950 text-white font-bold py-2 rounded transition duration-300 shadow-md">
-                  Más Información
-                </button>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* New section - Detailed product specifications */}
-        <section className="container mx-auto py-12 px-4">
-          <div className="max-w-4xl mx-auto bg-gradient-to-br from-black/80 to-red-950/60 backdrop-blur-sm p-8 rounded-lg border border-red-900/30 shadow-[0_0_20px_rgba(0,0,0,0.3)]">
-            <h2 className="text-3xl font-bold mb-6 text-white drop-shadow-[0_0_8px_rgba(220,38,38,0.4)]">Especificaciones Completas</h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div>
-                <h3 className="text-xl font-bold mb-4 text-white">CarPlay & Android Auto</h3>
-                <div className="space-y-3 text-gray-300">
-                  <p className="flex items-start"><span className="text-red-500 mr-2">•</span> 4 GB RAM + 64 GB de almacenamiento</p>
-                  <p className="flex items-start"><span className="text-red-500 mr-2">•</span> Pantalla QLED 1288 x 720</p>
-                  <p className="flex items-start"><span className="text-red-500 mr-2">•</span> Chips de CPU: ARM CORTEX A7 cuatro núcleos</p>
-                  <p className="flex items-start"><span className="text-red-500 mr-2">•</span> Bluetooth / WIFI / GPS / MIRROR LINK / USB</p>
-                  <p className="flex items-start"><span className="text-red-500 mr-2">•</span> Cámara inversa (no incluida)</p>
-                  <p className="flex items-start"><span className="text-red-500 mr-2">•</span> Potencia máxima: 4×60 W</p>
-                  <p className="flex items-start"><span className="text-red-500 mr-2">•</span> Salida RCA</p>
-                </div>
-              </div>
-              
-              <div>
-                <h3 className="text-xl font-bold mb-4 text-white">Formatos Compatibles</h3>
-                <div className="space-y-3 text-gray-300">
-                  <p className="flex items-start"><span className="text-red-500 mr-2">•</span> Reproducción de Audio: MP3/WMA/WAV/OGG/FLAC/APE</p>
-                  <p className="flex items-start"><span className="text-red-500 mr-2">•</span> Reproducción de vídeo/imágenes: RM/RMVB/MP4/FLV/MKV/3GP/AVI/ASF/SWFMP1/MP2/JPG</p>
-                  <p className="flex items-start"><span className="text-red-500 mr-2">•</span> Sintonización Radio</p>
-                  <p className="flex items-start"><span className="text-red-500 mr-2">•</span> Micrófono incorporado para llamadas manos libres</p>
-                  <p className="flex items-start"><span className="text-red-500 mr-2">•</span> CarPlay y Android Auto incorporado</p>
-                </div>
-                
-                <div className="mt-8">
-                  <button className="bg-gradient-to-r from-red-700 to-red-900 hover:from-red-800 hover:to-red-950 text-white font-bold py-3 px-8 rounded-lg transition duration-300 shadow-[0_0_15px_rgba(220,38,38,0.4)]">
-                    Comprar Ahora
+              <div className="p-6">
+                <h3 className="text-xl font-bold mb-2 text-white group-hover:text-red-400 transition-colors">
+                  {product.name}
+                </h3>
+                <p className="text-gray-300 mb-4">{product.description}</p>
+                <ul className="text-gray-400 mb-4 space-y-1">
+                  {product.specs.map((spec, i) => (
+                    <li key={i} className="flex items-center">
+                      <span className="text-red-500 mr-2">•</span>{spec}
+                    </li>
+                  ))}
+                </ul>
+                <div className="flex justify-between items-center">
+                  <span className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-white">
+                    ${product.price}
+                  </span>
+                  <button className="bg-gradient-to-r from-red-700 to-red-900 text-white px-4 py-2 rounded-lg hover:from-red-800 hover:to-red-950 transition-colors">
+                    Comprar
                   </button>
                 </div>
               </div>
             </div>
-          </div>
-        </section>
+          ))}
+        </div>
+      </section>
 
-        {/* Sección de características con efecto de vidrio */}
-        <section className="py-16 relative">
-          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm z-0"></div>
-          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgdmlld0JveD0iMCAwIDYwIDYwIj48ZyBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDEiPjxwYXRoIGQ9Ik0wIDMwIEw2MCAzMCBNMzAgMCBMMzAgNjAiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLW9wYWNpdHk9IjAuMDMiIHN0cm9rZS13aWR0aD0iMSIvPjwvZz48L3N2Zz4=')] opacity-30 z-0"></div>
-          <div className="container mx-auto px-4 relative z-10">
-            <h2 className="text-3xl font-bold mb-12 text-center text-white drop-shadow-[0_0_8px_rgba(220,38,38,0.4)]">¿Por qué elegir nuestros estéreos?</h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              <div className="text-center p-6 bg-gradient-to-br from-black/40 to-red-950/30 backdrop-blur-sm rounded-lg border border-red-900/20 shadow-lg hover:shadow-[0_0_15px_rgba(220,38,38,0.3)] transition-all duration-300">
-                <div className="w-16 h-16 bg-gradient-to-br from-red-600 to-red-900 rounded-full mx-auto mb-4 flex items-center justify-center shadow-[0_0_10px_rgba(220,38,38,0.5)]">
-                  <span className="text-white text-2xl">★</span>
-                </div>
-                <h3 className="text-xl font-bold mb-2 text-white">Calidad Premium</h3>
-                <p className="text-gray-300">Trabajamos sólo con las mejores marcas del mercado</p>
-              </div>
-              
-              <div className="text-center p-6 bg-gradient-to-br from-black/40 to-red-950/30 backdrop-blur-sm rounded-lg border border-red-900/20 shadow-lg hover:shadow-[0_0_15px_rgba(220,38,38,0.3)] transition-all duration-300">
-                <div className="w-16 h-16 bg-gradient-to-br from-red-600 to-red-900 rounded-full mx-auto mb-4 flex items-center justify-center shadow-[0_0_10px_rgba(220,38,38,0.5)]">
-                  <span className="text-white text-2xl">⚙️</span>
-                </div>
-                <h3 className="text-xl font-bold mb-2 text-white">Instalación Profesional</h3>
-                <p className="text-gray-300">Servicio de instalación por técnicos certificados</p>
-              </div>
-              
-              <div className="text-center p-6 bg-gradient-to-br from-black/40 to-red-950/30 backdrop-blur-sm rounded-lg border border-red-900/20 shadow-lg hover:shadow-[0_0_15px_rgba(220,38,38,0.3)] transition-all duration-300">
-                <div className="w-16 h-16 bg-gradient-to-br from-red-600 to-red-900 rounded-full mx-auto mb-4 flex items-center justify-center shadow-[0_0_10px_rgba(220,38,38,0.5)]">
-                  <span className="text-white text-2xl">🛡️</span>
-                </div>
-                <h3 className="text-xl font-bold mb-2 text-white">Garantía Extendida</h3>
-                <p className="text-gray-300">Todos nuestros productos incluyen garantía de 2 años</p>
-              </div>
-              
-              <div className="text-center p-6 bg-gradient-to-br from-black/40 to-red-950/30 backdrop-blur-sm rounded-lg border border-red-900/20 shadow-lg hover:shadow-[0_0_15px_rgba(220,38,38,0.3)] transition-all duration-300">
-                <div className="w-16 h-16 bg-gradient-to-br from-red-600 to-red-900 rounded-full mx-auto mb-4 flex items-center justify-center shadow-[0_0_10px_rgba(220,38,38,0.5)]">
-                  <span className="text-white text-2xl">💰</span>
-                </div>
-                <h3 className="text-xl font-bold mb-2 text-white">Precios Competitivos</h3>
-                <p className="text-gray-300">La mejor relación calidad-precio del mercado</p>
-              </div>
-            </div>
-          </div>
-        </section>
+      
 
-        {/* Sección de marcas con efecto de brillo */}
-        <section className="container mx-auto py-16 px-4">
-          <h2 className="text-3xl font-bold mb-12 text-center text-white drop-shadow-[0_0_8px_rgba(220,38,38,0.4)]">Nuestras Marcas</h2>
-          
-          <div className="flex flex-wrap justify-center gap-8">
-            <div className="w-32 h-32 bg-gradient-to-br from-black/60 to-red-950/40 backdrop-blur-sm rounded-lg flex items-center justify-center border border-red-900/20 shadow-lg hover:shadow-[0_0_15px_rgba(220,38,38,0.4)] transition-all duration-300 group">
-              <p className="text-white font-bold group-hover:text-red-400 transition-colors duration-300">Pioneer</p>
+      {/* Brands Section */}
+      <section className="container mx-auto py-16 px-4">
+        <h2 className="text-3xl font-bold text-center mb-12 text-white">
+          Marcas Asociadas
+        </h2>
+        <div className="flex flex-wrap justify-center gap-8">
+          {brands.map((brand, index) => (
+            <div 
+              key={index} 
+              className="w-40 h-40 bg-gradient-to-br from-black/60 to-red-950/40 backdrop-blur-sm rounded-lg flex items-center justify-center border border-red-900/20 hover:shadow-[0_0_20px_rgba(220,38,38,0.4)] transition-all duration-300 group"
+            >
+              <img 
+                src={brand.logo} 
+                alt={brand.name} 
+                className="max-w-24 max-h-24 opacity-70 group-hover:opacity-100 transition-opacity"
+              />
             </div>
-            <div className="w-32 h-32 bg-gradient-to-br from-black/60 to-red-950/40 backdrop-blur-sm rounded-lg flex items-center justify-center border border-red-900/20 shadow-lg hover:shadow-[0_0_15px_rgba(220,38,38,0.4)] transition-all duration-300 group">
-              <p className="text-white font-bold group-hover:text-red-400 transition-colors duration-300">Sony</p>
-            </div>
-            <div className="w-32 h-32 bg-gradient-to-br from-black/60 to-red-950/40 backdrop-blur-sm rounded-lg flex items-center justify-center border border-red-900/20 shadow-lg hover:shadow-[0_0_15px_rgba(220,38,38,0.4)] transition-all duration-300 group">
-              <p className="text-white font-bold group-hover:text-red-400 transition-colors duration-300">Kenwood</p>
-            </div>
-            <div className="w-32 h-32 bg-gradient-to-br from-black/60 to-red-950/40 backdrop-blur-sm rounded-lg flex items-center justify-center border border-red-900/20 shadow-lg hover:shadow-[0_0_15px_rgba(220,38,38,0.4)] transition-all duration-300 group">
-              <p className="text-white font-bold group-hover:text-red-400 transition-colors duration-300">JBL</p>
-            </div>
-            <div className="w-32 h-32 bg-gradient-to-br from-black/60 to-red-950/40 backdrop-blur-sm rounded-lg flex items-center justify-center border border-red-900/20 shadow-lg hover:shadow-[0_0_15px_rgba(220,38,38,0.4)] transition-all duration-300 group">
-              <p className="text-white font-bold group-hover:text-red-400 transition-colors duration-300">Alpine</p>
-            </div>
-          </div>
-        </section>
+          ))}
+        </div>
+      </section>
 
-        {/* Sección de contacto con efecto de vidrio */}
-        <section id="contacto" className="py-16 relative">
-          <div className="absolute inset-0 bg-gradient-to-b from-black via-red-950/40 to-black z-0"></div>
-          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDQwIDQwIj48ZyBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDMiPjxjaXJjbGUgY3g9IjIwIiBjeT0iMjAiIHI9IjEiLz48L2c+PC9zdmc+')] opacity-30 z-0"></div>
-          <div className="container mx-auto px-4 relative z-10">
-            <h2 className="text-3xl font-bold mb-12 text-center text-white drop-shadow-[0_0_8px_rgba(220,38,38,0.4)]">Contáctanos</h2>
-            
-            <div className="max-w-2xl mx-auto bg-gradient-to-br from-black/80 to-red-950/60 backdrop-blur-sm p-8 rounded-lg border border-red-900/30 shadow-[0_0_20px_rgba(0,0,0,0.3)]">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+      {/* Features Section */}
+      <section className="bg-black/90 py-16">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center mb-12 text-white">
+            ¿Por Qué Elegirnos?
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            {[
+              { 
+                icon: <Star className="text-red-500" size={36} />, 
+                title: "Calidad Premium", 
+                description: "Los mejores productos seleccionados" 
+              },
+              { 
+                icon: <Settings className="text-red-500" size={36} />, 
+                title: "Instalación Profesional", 
+                description: "Técnicos certificados" 
+              },
+              { 
+                icon: <Shield className="text-red-500" size={36} />, 
+                title: "Garantía Extendida", 
+                description: "2 años de protección total" 
+              },
+              { 
+                icon: <DollarSign className="text-red-500" size={36} />, 
+                title: "Precios Competitivos", 
+                description: "La mejor relación calidad-precio" 
+              }
+            ].map((feature, index) => (
+              <div 
+                key={index} 
+                className="text-center p-6 bg-black/50 rounded-lg hover:bg-red-950/20 transition-colors group"
+              >
+                <div className="mb-4 flex justify-center">
+                  {feature.icon}
+                </div>
+                <h3 className="text-xl font-bold mb-2 text-white group-hover:text-red-400 transition-colors">
+                  {feature.title}
+                </h3>
+                <p className="text-gray-300">{feature.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="contacto" className="container mx-auto py-16 px-4">
+        <div className="max-w-2xl mx-auto bg-gradient-to-br from-black/80 to-red-950/70 rounded-lg shadow-2xl overflow-hidden">
+          <div className="p-8">
+            <h2 className="text-3xl font-bold text-center mb-8 text-white">
+              Contáctanos
+            </h2>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <h3 className="text-xl font-bold mb-4 text-white">Información de Contacto</h3>
-                  <p className="text-gray-300 mb-2 flex items-center"><span className="mr-2">📱</span> Teléfono: (123) 456-7890</p>
-                  <p className="text-gray-300 mb-2 flex items-center"><span className="mr-2">✉️</span> Email: info@autostereo.com</p>
-                  <p className="text-gray-300 mb-2 flex items-center"><span className="mr-2">🏪</span> Dirección: Av. Principal #123</p>
-                  <p className="text-gray-300 flex items-center"><span className="mr-2">⏰</span> Horario: Lun-Sáb 9:00 - 19:00</p>
+                  <label htmlFor="name" className="block text-sm text-gray-300 mb-2">
+                    Nombre Completo
+                  </label>
+                  <input 
+                    type="text" 
+                    id="name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full bg-black/40 border border-red-900/30 rounded-lg py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-red-500 transition-all"
+                    placeholder="Tu nombre"
+                  />
                 </div>
-                
                 <div>
-                  <h3 className="text-xl font-bold mb-4 text-white">Envíanos un Mensaje</h3>
-                  <form>
-                    <div className="mb-4">
-                      <input type="text" placeholder="Nombre" className="w-full p-2 rounded bg-black/70 text-white border border-red-900/30 focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500 transition duration-300" />
-                    </div>
-                    <div className="mb-4">
-                      <input type="email" placeholder="Email" className="w-full p-2 rounded bg-black/70 text-white border border-red-900/30 focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500 transition duration-300" />
-                    </div>
-                    <div className="mb-4">
-                      <textarea placeholder="Mensaje" rows={4} className="w-full p-2 rounded bg-black/70 text-white border border-red-900/30 focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500 transition duration-300"></textarea>
-                    </div>
-                    <button className="bg-gradient-to-r from-red-700 to-red-900 hover:from-red-800 hover:to-red-950 text-white font-bold py-2 px-6 rounded transition duration-300 shadow-[0_0_10px_rgba(220,38,38,0.3)] hover:shadow-[0_0_15px_rgba(220,38,38,0.5)]">
-                      Enviar Mensaje
-                    </button>
-                  </form>
+                  <label htmlFor="phone" className="block text-sm text-gray-300 mb-2">
+                    Número de Celular
+                  </label>
+                  <input 
+                    type="tel"
+                    id="phone"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full bg-black/40 border border-red-900/30 rounded-lg py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-red-500 transition-all"
+                    placeholder="10 dígitos"
+                  />
                 </div>
               </div>
-            </div>
+              
+              <div>
+                <label htmlFor="vehicle" className="block text-sm text-gray-300 mb-2">
+                  Marca y Modelo de Vehículo
+                </label>
+                <input 
+                  type="text"
+                  id="vehicle"
+                  name="vehicle"
+                  value={formData.vehicle}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full bg-black/40 border border-red-900/30 rounded-lg py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-red-500 transition-all"
+                  placeholder="Ej. Toyota Corolla 2020"
+                />
+              </div>
+              
+              <div>
+                <label htmlFor="description" className="block text-sm text-gray-300 mb-2">
+                  Descripción de tu Consulta
+                </label>
+                <textarea 
+                  id="description"
+                  name="description"
+                  value={formData.description}
+                  onChange={handleInputChange}
+                  required
+                  rows={4}
+                  className="w-full bg-black/40 border border-red-900/30 rounded-lg py-3 px-4 text-white focus:outline-none focus:ring-2 focus:ring-red-500 transition-all"
+                  placeholder="Describe los detalles de tu consulta o requerimiento"
+                ></textarea>
+              </div>
+              
+              <div className="text-center">
+                <button 
+                  type="submit"
+                  className="bg-gradient-to-r from-red-700 to-red-900 text-white font-bold py-3 px-8 rounded-lg hover:from-red-800 hover:to-red-950 transition-all duration-300 flex items-center justify-center mx-auto space-x-2 hover:scale-105 transform"
+                >
+                  <SendIcon size={20} />
+                  <span>Enviar Consulta por WhatsApp</span>
+                </button>
+              </div>
+            </form>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Footer con efecto de vidrio */}
-        <footer className="bg-black/90 backdrop-blur-md text-white py-8 border-t border-red-900/30">
-          <div className="container mx-auto px-4 text-center">
-            <p>&copy; 2025 AutoStereo Express. Todos los derechos reservados.</p>
-            <div className="flex justify-center space-x-6 mt-4">
-              <a href="#" className="text-gray-400 hover:text-red-400 transition-colors duration-300">Facebook</a>
-              <a href="#" className="text-gray-400 hover:text-red-400 transition-colors duration-300">Instagram</a>
-              <a href="#" className="text-gray-400 hover:text-red-400 transition-colors duration-300">WhatsApp</a>
-            </div>
+      {/* Footer Section */}
+      <footer className="bg-black/90 text-white py-8 border-t border-red-900/30">
+        <div className="container mx-auto px-4 text-center">
+          <p className="mb-4">&copy; 2025 MusicCars Express. Todos los derechos reservados.</p>
+          <div className="flex justify-center space-x-6">
+            <Link href="#" className="hover:text-red-400 transition-colors">Política de Privacidad</Link>
+            <Link href="#" className="hover:text-red-400 transition-colors">Términos de Servicio</Link>
+            <Link href="#contacto" className="hover:text-red-400 transition-colors">Contacto</Link>
           </div>
-        </footer>
-      </div>
+        </div>
+      </footer>
     </div>
   );
 }
