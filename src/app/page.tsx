@@ -274,7 +274,7 @@ Por favor, ¿pueden proporcionarme más información sobre este producto?`;
           <p className="text-base sm:text-xl md:text-2xl mb-6 sm:mb-8 text-gray-200 px-4 sm:px-0">
             Tecnología de punta para tu vehiculo
           </p>
-          <Link href="/productos">
+          <Link href="#productos">
   <button className="bg-gradient-to-r from-red-700 to-red-900 hover:from-red-800 hover:to-red-950 text-white font-bold py-2 sm:py-3 px-6 sm:px-8 rounded-lg transition duration-300 transform hover:scale-105">
     Explora Nuestros Productos
   </button>
