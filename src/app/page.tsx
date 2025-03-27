@@ -17,7 +17,7 @@ const PRODUCTS = [
       "CPU ARM CORTEX A7 Quad-Core",
       "Bluetooth/WiFi/GPS/Mirror Link"
     ],
-    price: 1111
+    
   },
   {
     name: "CreeLed IR100 Premium",
@@ -29,7 +29,7 @@ const PRODUCTS = [
       "Diseño resistente y duradero",
       "Múltiples modos de iluminación"
     ],
-    price: 1299
+   
   },
   {
     name: "The Ultra Sum R8 Premium",
@@ -41,7 +41,7 @@ const PRODUCTS = [
       "Conectividad Bluetooth avanzada",
       "Diseño elegante y compacto"
     ],
-    price: 1599
+    
   },
   {
     name: "CreeLed J10 Intermedio",
@@ -53,7 +53,7 @@ const PRODUCTS = [
       "Múltiples opciones de montaje",
       "Compatibilidad universal"
     ],
-    price: 899
+    
   },
   {
     name: "Luxked Y3 Económicas",
@@ -65,7 +65,7 @@ const PRODUCTS = [
       "Durabilidad garantizada",
       "Perfectas para usuarios principiantes"
     ],
-    price: 599
+    
   }
 ];
 
@@ -97,7 +97,7 @@ const FEATURES = [
   { 
     icon: <Shield className="text-red-500" size={36} />, 
     title: "Garantía Extendida", 
-    description: "2 años de protección total" 
+    description: "" 
   },
   { 
     icon: <DollarSign className="text-red-500" size={36} />, 
@@ -168,6 +168,26 @@ ${formData.description}`;
     
     window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, '_blank');
   }, [formData]);
+
+  const sendProductInquiry = useCallback((product: typeof PRODUCTS[0]) => {
+    const message = `Hola MusicCars! 
+
+Estoy interesado en el producto: ${product.name}
+
+Detalles del Producto:
+- Descripción: ${product.description}
+
+
+Especificaciones:
+${product.specs.map(spec => `- ${spec}`).join('\n')}
+
+Por favor, ¿pueden proporcionarme más información sobre este producto?`;
+
+    const encodedMessage = encodeURIComponent(message);
+    const phoneNumber = '5493816961911'; 
+    
+    window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, '_blank');
+  }, []);
 
   // Memoized navigation handlers for each section
   const {
@@ -252,7 +272,7 @@ ${formData.description}`;
             Transforma Tu Experiencia Auditiva
           </h1>
           <p className="text-base sm:text-xl md:text-2xl mb-6 sm:mb-8 text-gray-200 px-4 sm:px-0">
-            Tecnología de punta para los amantes del sonido sobre ruedas
+            Tecnología de punta para tu vehiculo
           </p>
           <button className="bg-gradient-to-r from-red-700 to-red-900 hover:from-red-800 hover:to-red-950 text-white font-bold py-2 sm:py-3 px-6 sm:px-8 rounded-lg transition duration-300 transform hover:scale-105">
             Explora Nuestros Productos
@@ -363,10 +383,13 @@ ${formData.description}`;
                 </ul>
                 <div className="flex justify-between items-center">
                   <span className="text-xl sm:text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-white">
-                    ${product.price}
+                    
                   </span>
-                  <button className="bg-gradient-to-r from-red-700 to-red-900 text-white text-xs sm:text-base px-3 sm:px-4 py-2 rounded-lg hover:from-red-800 hover:to-red-950 transition-colors">
-                    Comprar
+                  <button 
+                    onClick={() => sendProductInquiry(product)}
+                    className="bg-gradient-to-r from-red-700 to-red-900 text-white text-xs sm:text-base px-3 sm:px-4 py-2 rounded-lg hover:from-red-800 hover:to-red-950 transition-colors"
+                  >
+                    Enviar Consulta
                   </button>
                 </div>
               </div>
