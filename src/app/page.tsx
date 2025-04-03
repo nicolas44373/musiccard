@@ -73,7 +73,11 @@ const WORK_IMAGES = {
   focus: ["/focus.jpg", "/focus2.jpg"],
   amarok: ["/amarok.jpg", "/amarok2.jpg"],
   ranger: ["/trabajo2.jpg", "/trabajo2.1.jpg"],
-  corolla: ["/corolla.jpg", "/corolla2.jpg"]
+  corolla: ["/corolla.jpg", "/corolla2.jpg"],
+  fiat: ["/fiat2.jpg", "/fiat.jpg"],
+  ford: ["/ford.jpg", "/ford2.jpg"],
+  amarokt: ["/amaroktra.jpg", "/amaroktra.jpg"],
+  tactil: ["/tactil.jpg", "/tactil.jpg"]
 };
 
 const BRANDS = [
@@ -112,7 +116,11 @@ export default function Home() {
     focus: 0,
     amarok: 0,
     ranger: 0,
-    corolla: 0
+    corolla: 0,
+    fiat:0,
+    ford:0,
+    amarokt:0,
+    tactil:0
   });
 
   const [formData, setFormData] = useState({
@@ -201,8 +209,31 @@ Por favor, ¿pueden proporcionarme más información sobre este producto?`;
   } = useMemo(() => createImageNavigationHandlers('ranger'), [createImageNavigationHandlers]);
 
   const {
+    nextImage: nextfiatImage,
+    prevImage: prevfiatImage
+  } = useMemo(() => createImageNavigationHandlers('fiat'), [createImageNavigationHandlers]);
+  const {
+    nextImage: nextfordImage,
+    prevImage: prevfordImage
+  } = useMemo(() => createImageNavigationHandlers('ford'), [createImageNavigationHandlers]);
+
+  const {
+    nextImage: nexttraImage,
+    prevImage: prevtraImage
+  } = useMemo(() => createImageNavigationHandlers('amarokt'), [createImageNavigationHandlers]);
+
+  const {
+    nextImage: nexttacImage,
+    prevImage: prevtacImage
+  } = useMemo(() => createImageNavigationHandlers('tactil'), [createImageNavigationHandlers]);
+
+  const {
     nextImage: nextCorollaImage,
     prevImage: prevCorollaImage
+  } = useMemo(() => createImageNavigationHandlers('corolla'), [createImageNavigationHandlers]);
+  const {
+    nextImage: nextAmarokImage,
+    prevImage: prevAmarokImage
   } = useMemo(() => createImageNavigationHandlers('corolla'), [createImageNavigationHandlers]);
 
   const toggleMobileMenu = useCallback(() => {
@@ -263,9 +294,8 @@ Por favor, ¿pueden proporcionarme más información sobre este producto?`;
           </div>
         )}
       </nav>
-  
-      {/* Hero Section */}
-      <header className="relative min-h-[60vh] md:h-[80vh] flex items-center justify-center text-center overflow-hidden">
+  {/* Hero Section */}
+  <header className="relative min-h-[60vh] md:h-[80vh] flex items-center justify-center text-center overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-black via-red-900/50 to-black opacity-80 z-10"></div>
         <div className="relative z-20 container mx-auto px-4 max-w-7xl">
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 text-white drop-shadow-[0_0_15px_rgba(220,38,38,0.5)]">
@@ -281,77 +311,103 @@ Por favor, ¿pueden proporcionarme más información sobre este producto?`;
 </Link>
         </div>
       </header>
-  
-      {/* Vehicle Installation Sections */}
-      {[
-        { 
-          title: "Ford Focus", 
-          images: WORK_IMAGES.focus, 
-          imageIndex: currentImageIndices.focus,
-          nextImage: nextFocusImage,
-          prevImage: prevFocusImage 
-        },
-        { 
-          title: "Amarok", 
-          images: WORK_IMAGES.amarok, 
-          imageIndex: currentImageIndices.amarok,
-          nextImage: () => {}, // Placeholder, implement similar to others
-          prevImage: () => {} 
-        },
-        { 
-          title: "Multimedia Ford Ranger", 
-          images: WORK_IMAGES.ranger, 
-          imageIndex: currentImageIndices.ranger,
-          nextImage: nextRangerImage,
-          prevImage: prevRangerImage 
-        },
-        { 
-          title: "Multimedia Toyota Corolla", 
-          images: WORK_IMAGES.corolla, 
-          imageIndex: currentImageIndices.corolla,
-          nextImage: nextCorollaImage,
-          prevImage: prevCorollaImage 
-        }
-      ].map((section, index) => (
-        <section key={index} className="container mx-auto py-12 sm:py-16 px-4 max-w-7xl">
-          <h2 className="text-2xl sm:text-3xl font-bold text-center mb-8 sm:mb-12 text-white">
-            {section.title}
-          </h2>
-          <div className="relative w-full max-w-4xl mx-auto">
-            <div className="relative overflow-hidden rounded-lg shadow-2xl">
-              <img 
-                src={section.images[section.imageIndex]} 
-                alt={`Trabajo ${section.imageIndex === 0 ? 'Antes' : 'Después'}`} 
-                className="w-full h-auto sm:h-[500px] md:h-[600px] lg:h-[800px] object-cover"
-              />
-              {section.images.length > 1 && (
-                <>
-                  <button 
-                    onClick={section.prevImage}
-                    className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 bg-black/50 rounded-full p-1 sm:p-2 hover:bg-red-900/50 transition-colors"
-                  >
-                    <ChevronLeft className="w-5 h-5 md:w-6 md:h-6" />
-                  </button>
-                  <button 
-                    onClick={section.nextImage}
-                    className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 bg-black/50 rounded-full p-1 sm:p-2 hover:bg-red-900/50 transition-colors"
-                  >
-                    <ChevronRight className="w-5 h-5 md:w-6 md:h-6" />
-                  </button>
-                </>
-              )}
-            </div>
-            {section.images.length > 1 && (
-              <div className="text-center mt-2 sm:mt-4">
-                <p className="text-xs sm:text-base text-gray-300">
-                  {section.imageIndex === 0 ? 'Antes' : 'Después'} de nuestra instalación
-                </p>
-              </div>
-            )}
-          </div>
-        </section>
-      ))}
-  
+{/* Vehicle Installation Sections */}
+{[
+  { 
+    title: "Ford Focus", 
+    images: WORK_IMAGES.focus, 
+    imageIndex: currentImageIndices.focus,
+    nextImage: nextFocusImage,
+    prevImage: prevFocusImage 
+  },
+  { 
+    title: "Amarok", 
+    images: WORK_IMAGES.amarok, 
+    imageIndex: currentImageIndices.amarok,
+    nextImage: nextAmarokImage,  // Fixed function name
+    prevImage: prevAmarokImage   // Fixed function name
+  },
+  { 
+    title: "Multimedia Ford Ranger", 
+    images: WORK_IMAGES.ranger, 
+    imageIndex: currentImageIndices.ranger,
+    nextImage: nextRangerImage,
+    prevImage: prevRangerImage 
+  },
+  { 
+    title: "Multimedia Toyota Corolla", 
+    images: WORK_IMAGES.corolla, 
+    imageIndex: currentImageIndices.corolla,
+    nextImage: nextCorollaImage,
+    prevImage: prevCorollaImage 
+  },
+  { 
+    title: "Multimedia Fiat", 
+    images: WORK_IMAGES.fiat, 
+    imageIndex: currentImageIndices.fiat,
+    nextImage: nextfiatImage,    // Fixed capitalization
+    prevImage: prevfiatImage     // Fixed capitalization
+  },
+  { 
+    title: "Multimedia Ford", 
+    images: WORK_IMAGES.ford, 
+    imageIndex: currentImageIndices.ford,
+    nextImage: nextfordImage,    // Fixed capitalization
+    prevImage: prevfordImage     // Fixed capitalization
+  },
+  { 
+    title: "Instalación luces led Amarok", 
+    images: WORK_IMAGES.amarokt, 
+    imageIndex: currentImageIndices.amarokt,
+    nextImage: nexttraImage, // Fixed function name
+    prevImage: prevtraImage  // Fixed function name
+  },
+  { 
+    title: "Reparación táctil Amarok, Peugeot, Citroen y Chevrolet", 
+    images: WORK_IMAGES.tactil, 
+    imageIndex: currentImageIndices.tactil,
+    nextImage: nexttacImage,  // Fixed capitalization
+    prevImage: prevtacImage   // Fixed capitalization
+  }
+].map((section, index) => (
+  <section key={index} className="container mx-auto py-12 sm:py-16 px-4 max-w-7xl">
+    <h2 className="text-2xl sm:text-3xl font-bold text-center mb-8 sm:mb-12 text-white">
+      {section.title}
+    </h2>
+    <div className="relative w-full max-w-4xl mx-auto">
+      <div className="relative overflow-hidden rounded-lg shadow-2xl bg-black flex justify-center items-center">
+        <img 
+          src={section.images[section.imageIndex]} 
+          alt={`Trabajo ${section.imageIndex === 0 ? 'Antes' : 'Después'}`} 
+          className="max-w-full max-h-[500px] sm:max-h-[600px] md:max-h-[700px] lg:max-h-[800px] object-contain"
+        />
+        {section.images.length > 1 && (
+          <>
+            <button 
+              onClick={section.prevImage}
+              className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 bg-black/50 rounded-full p-1 sm:p-2 hover:bg-red-900/50 transition-colors z-10"
+            >
+              <ChevronLeft className="w-5 h-5 md:w-6 md:h-6" />
+            </button>
+            <button 
+              onClick={section.nextImage}
+              className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 bg-black/50 rounded-full p-1 sm:p-2 hover:bg-red-900/50 transition-colors z-10"
+            >
+              <ChevronRight className="w-5 h-5 md:w-6 md:h-6" />
+            </button>
+          </>
+        )}
+      </div>
+      {section.images.length > 1 && (
+        <div className="text-center mt-2 sm:mt-4">
+          <p className="text-xs sm:text-base text-gray-300">
+            {section.imageIndex === 0 ? 'Antes' : 'Después'} de nuestra instalación
+          </p>
+        </div>
+      )}
+    </div>
+  </section>
+))}
       {/* Products Section */}
       <section id="productos" className="container mx-auto py-12 sm:py-16 px-4 max-w-7xl">
         <h2 className="text-2xl sm:text-3xl font-bold text-center mb-8 sm:mb-12 text-white">
